@@ -1,0 +1,8 @@
+fastapi
+uvicorn
+pdfplumber
+pytesseract
+opencv-python
+transformers
+torch
+pdf2image
