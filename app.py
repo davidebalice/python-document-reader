@@ -18,7 +18,6 @@ async def extract_data(file: UploadFile = File(...)):
     file_location = f"temp/{file.filename}"
     
     try:
-        # Salva il file temporaneamente
         with open(file_location, "wb") as f:
             f.write(await file.read())
         

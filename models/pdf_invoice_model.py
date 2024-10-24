@@ -2,16 +2,16 @@ import re
 import pdfplumber
 import logging
 
-# Espressioni regolari per i campi
-REGEX_BUSINESS_NAME = r"Business Name 01: (.*)"
-REGEX_CUSTOMER_NAME = r"Business Name 02: (.*)"
-REGEX_INVOICE_NUMBER = r"Invoice No: (\d+)"
-REGEX_DATE_ISSUE = r"Date of issue: (\d{2}/\d{2}/\d{4})"
-REGEX_DUE_DATE = r"Due Date: (\d{2}/\d{2}/\d{4})"
-REGEX_SUBTOTAL = r"Sub total: \$(\d+[,.]\d{2})"
-REGEX_DISCOUNT = r"Discount: -\$(\d+[,.]\d{2})"
-REGEX_TAX = r"Tax: \$(\d+[,.]\d{2})"
-REGEX_TOTAL = r"Total: \$(\d+[,.]\d{2})"
+# Espressioni regolari per i campi presenti nel PDF
+REGEX_BUSINESS_NAME = r"Company name\s*(.*)"  # Nome azienda
+REGEX_CUSTOMER_NAME = r"Company Name\s*(.*)"  # Nome cliente
+REGEX_INVOICE_NUMBER = r"Fattura\s+(\d+)"  # Numero fattura
+REGEX_DATE_ISSUE = r"Data\s+(\d{2}/\d{2}/\d{4})"  # Data di emissione
+REGEX_DUE_DATE = r"Due Date\s+(\d{2}/\d{2}/\d{4})"  # Data di scadenza
+REGEX_SUBTOTAL = r"Imponibile\s+€\s*([\d,.]+)"  # Imponibile
+REGEX_DISCOUNT = r"Sconto\s+-€\s*([\d,.]+)"  # Sconto
+REGEX_TAX = r"IVA\s+€\s*([\d,.]+)"  # IVA
+REGEX_TOTAL = r"TOTALE FATTURA\s+€\s*([\d,.]+)"  # Totale fattura
 
 def extract_text_from_invoice_pdf(file_path):
     invoice_data = {
@@ -33,7 +33,6 @@ def extract_text_from_invoice_pdf(file_path):
             for page in pdf.pages:
                 text += page.extract_text() or ""
             
-            # Estrarre dati dalla fattura con regex
             for key, regex in {
                 "business_name": REGEX_BUSINESS_NAME,
                 "customer_name": REGEX_CUSTOMER_NAME,
