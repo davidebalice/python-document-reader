@@ -1,6 +1,6 @@
 import os
 import logging
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Request
 from utils.classification import classify_text
 from models.pdf_invoice_model import extract_text_from_invoice_pdf
 from models.pdf_resume_model import extract_text_from_resume_pdf
@@ -10,11 +10,20 @@ from models.image_model import extract_text_from_image
 
 app = FastAPI()
 
+ALLOWED_IPS = ["127.0.0.1", "157.90.252.198"]
+
 # Logging
 logging.basicConfig(level=logging.DEBUG)
 
 @app.post("/extract_data/")
-async def extract_data(file: UploadFile = File(...)):
+async def extract_data(request: Request, file: UploadFile = File(...)):
+
+    client_ip = request.client.host
+    if client_ip not in ALLOWED_IPS:
+        logging.warning(f"Access attempt from unauthorized IP: {client_ip}")
+        raise HTTPException(status_code=403, detail="Access forbidden")
+
+
     file_location = f"temp/{file.filename}"
     
     try:
@@ -38,9 +47,13 @@ async def extract_data(file: UploadFile = File(...)):
             elif classification_result == "contract":
                 extracted_data = extract_text_from_contract_pdf(file_location)
         elif file.filename.endswith(('.jpg', '.jpeg', '.png')):
+            text = extract_text_from_image(file_location)
             extracted_data = extract_text_from_image(file_location)
         else:
             raise HTTPException(status_code=400, detail="File type not supported")
+        
+
+        
 
         classification = classify_text(text)
 
