@@ -10,7 +10,7 @@ from models.image_model import extract_text_from_image
 
 app = FastAPI()
 
-ALLOWED_IPS = ["127.0.0.1", "157.90.252.198"]
+ALLOWED_IPS = ["127.0.0.1", "157.90.252.198", "157.90.144.24"]
 
 # Logging
 logging.basicConfig(level=logging.DEBUG)
